@@ -1,22 +1,26 @@
-#from flask import Blueprint, request
-#from flask_restful import Api, Resource, reqparse
-#from .. import db
-# from ..model.model 
-# import class from model
+from random import randrange
+from datetime import date
+import os, base64
+import json
 
-# example_bp = Blueprint("leaderboards", __name__)
-# example_api = Api(example_bp)
+from sqlalchemy.exc import IntegrityError
+from werkzeug.security import generate_password_hash, check_password_hash
+
+# place your model code here
+# you can use the code we showed in our lesson as an example
 
 
-# class ExampleAPI(Resource):
-# make sure to have all of CRUD made here
-# make a second api for images as well, in a different file
 
-# class ExampleListAPI(Resource):
-# edit the links below in order to 
 
-# example_api.add_resource(ExampleAPI, "/data-points")
-# example_api.add_resource(ExampleListAPI, "/database")
+from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy.exc import IntegrityError
+import json
+from werkzeug.security import generate_password_hash, check_password_hash
+
+# importing library dependencies
+from flask import Blueprint, request
+from flask_restful import Api, Resource, reqparse
+
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -38,17 +42,15 @@ app.config["UPLOAD_FOLDER"] = "volumes/uploads/"  # location of user uploaded co
 
 
 
-from sqlalchemy import Column, Integer, String, Text
-from sqlalchemy.exc import IntegrityError
-import json
-from werkzeug.security import generate_password_hash, check_password_hash
-
+# setting variables used to store future data
+bread_bp = Blueprint("leaderboards", __name__)
+bread_api = Api(bread_bp)
 
 # 
 # bread ranking DB class that maps rank SQL table 
 #
 class Bread(db.Model):
-    __tablename__ = "leaderboard"
+    __tablename__ = "Bread"
 
     # 
     # bread DB columns for easy, medium and hard points with user info
@@ -162,7 +164,7 @@ class Bread(db.Model):
 #
 # Initializes Leaderboard DB with test data
 #   
-def init_bread():
+def InitBread():
     with app.app_context():
         """Create database and tables"""
         db.create_all()
@@ -185,34 +187,10 @@ def init_bread():
                 '''fails with bad or duplicate data'''
                 print(f"Records exist uid {l.breadName}, or error.")
 
-init_bread()
+InitBread()
 
 
 
 
-
-# full list of leaderboard
-class BreadListAPI(Resource):
-    # GET method
-    def get(self):
-        try:
-            # attempts to find the entire database requested and is stored in variable
-            breads = db.session.query(Bread).all()
-            # sends back the entire database
-            return [bread.to_dict() for bread in breads]
-        except Exception as e:
-            # error checking for request errors
-            db.session.rollback()
-            return {"message": f"server error: {e}"}, 500
-
-    # DELETE method
-    def delete(self):
-        try:
-            # deletes entire database
-            db.session.query(Bread).delete()
-            db.session.commit()
-            return []
-        except Exception as e:
-            # checks for errors in request
-            db.session.rollback()
-            return {"message": f"server error: {e}"}, 500
+# make sure you put initial data here as well
+# EXTRA CREDIT: make the placing of data more efficient than our method shown in the lesson
