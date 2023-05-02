@@ -1,37 +1,8 @@
 from sqlalchemy import Column, Integer, String, Text
+from .. import db
 from sqlalchemy.exc import IntegrityError
 import json
-
-from random import randrange
-from datetime import date
-import os, base64
-import json
-
-from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
-
-
-# importing library dependencies
-from flask import Blueprint, request
-from flask_restful import Api, Resource, reqparse
-
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-
-# Setup of key Flask object (app)
-app = Flask(__name__)
-
-# Setup SQLAlchemy object and properties for the database (db)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SECRET_KEY"] = "SECRET_KEY"
-db = SQLAlchemy(app)
-
-# Images storage
-app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024  # maximum size of uploaded content
-app.config["UPLOAD_EXTENSIONS"] = [".jpg", ".png", ".gif"]  # supported file types
-app.config["UPLOAD_FOLDER"] = "volumes/uploads/"  # location of user uploaded content
-
 
 # 
 # Leaderboard DB class that maps leaderboard SQL table 
@@ -219,61 +190,31 @@ class Leaderboard(db.Model):
         db.session.commit()
         return None
 
-
-from flask import Blueprint, request
-from flask_restful import Api, Resource, reqparse
-
-leaderboard_bp = Blueprint("leaderboards", __name__)
-leaderboard_api = Api(leaderboard_bp)
-
+    # 
+    # Initializes Leaderboard DB with test data
+    #            
 def init_leaderboards():
-    with app.app_context():
-        """Create database and tables"""
-        db.create_all()
-        """Tester data for table"""
-        l1 = Leaderboard(username="bob", password="apple", pointsEasy=2, pointsMedium=5, pointsHard=3)
-        l2 = Leaderboard(username="bobby", password="appley", pointsEasy=20, pointsMedium=50, pointsHard=30)
-        l3 = Leaderboard(username="bobbert", password="appled", pointsEasy=200, pointsMedium=500, pointsHard=300)
-        l4 = Leaderboard(username="bobruth", password="appler", pointsEasy=100, pointsMedium=300, pointsHard=500)
-        leaderboards = [l1, l2, l3, l4]
+    """Create database and tables"""
+    db.create_all()
+    """Tester data for table"""
+    l1 = Leaderboard(username="bob", password="apple",
+                     pointsEasy=2, pointsMedium=5, pointsHard=3)
+    l2 = Leaderboard(username="bobby", password="appley",
+                     pointsEasy=20, pointsMedium=50, pointsHard=30)
+    l3 = Leaderboard(username="bobbert", password="appled",
+                     pointsEasy=200, pointsMedium=500, pointsHard=300)
+    l4 = Leaderboard(username="bobruth", password="appler",
+                     pointsEasy=100, pointsMedium=300, pointsHard=500)
+    leaderboards = [l1, l2, l3, l4]
 
-        """Builds sample user/note(s) data"""
-        for l in leaderboards:
-            try:
-                '''add user to table'''
-                object = l.create()
-                print(f"Created new uid {object.username}")
-                db.session.add(l)
-                db.session.commit()
-            except:
-                '''fails with bad or duplicate data'''
-                print(f"Records exist uid {l.username}, or error.")
-
-init_leaderboards()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    """Builds sample user/note(s) data"""
+    for l in leaderboards:
+        try:
+            '''add user to table'''
+            object = l.create()
+            print(f"Created new uid {object.username}")
+            db.session.add(l)
+            db.session.commit()
+        except:
+            '''fails with bad or duplicate data'''
+            print(f"Records exist uid {l.username}, or error.")
