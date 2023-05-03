@@ -17,9 +17,6 @@ def init_db():
         db.create_all()
         init_leaderboards()
 
-@app.route('/')
-def index():
-    return render_template('index.html')
 
 # app.add_url_rule('/photos/<path:filename>', endpoint='photos', view_func=app.send_static_file)
 # @app.route('/')
